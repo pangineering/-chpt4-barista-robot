@@ -23,7 +23,7 @@ def generate_launch_description():
     robot_model_path = os.path.join(
         get_package_share_directory('barista_robot_description'))
 
-    xacro_file = os.path.join(robot_model_path, 'xacro', 'barista_robot_model.urdf.xacro')
+    xacro_file = os.path.join(robot_model_path, 'xacro', 'barista.urdf.xacro')
 
     # convert XACRO file into URDF
     doc = xacro.parse(open(xacro_file))
