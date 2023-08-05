@@ -7,6 +7,7 @@
   <xacro:include filename="$(find barista_robot_description)/xacro/laser_scanner.xacro"/>
   <xacro:include filename="$(find barista_robot_description)/xacro/cup_holder_tray.xacro"/>
 
+
   <!-- Define the base link of the robot -->
   <link name="base_link">
     <!-- Visual representation of the base link -->
@@ -36,14 +37,41 @@
   <!-- Include and instantiate the wheel.xacro macro for the left wheel -->
   <xacro:wheel prefix="left" />
 <xacro:wheel_color prefix="left" />
-  <!-- Include and instantiate the joint_wheel.xacro macro for the left wheel joint -->
   <xacro:joint_wheel prefix="left" x="0.1" />
+
+
 
   <!-- Include and instantiate the wheel.xacro macro for the right wheel -->
   <xacro:wheel prefix="right" />
 <xacro:wheel_color prefix="right" />
-  <!-- Include and instantiate the joint_wheel.xacro macro for the right wheel joint -->
-  <xacro:joint_wheel prefix="right" x="-0.1" />
+  <xacro:joint_wheel prefix="right" x="-0.1" /> 
+
+
+
+  <gazebo>
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <!-- wheels -->
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+
+      <!-- kinematics -->
+      <wheel_separation>1.66</wheel_separation>
+      <wheel_diameter>0.8</wheel_diameter>
+
+      <!-- limits -->	
+      <max_wheel_torque>20</max_wheel_torque>
+      <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+      <!-- output -->
+      <publish_odom>true</publish_odom>
+      <publish_odom_tf>false</publish_odom_tf>
+      <publish_wheel_tf>true</publish_wheel_tf>
+      <command_topic>cmd_vel</command_topic>
+
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+    </plugin>
+  </gazebo>
 
   <xacro:standoff_link prefix="stand1" />
   <xacro:standoff_joint prefix="stand1" x="0.1" y="0.1" z="0.185" />

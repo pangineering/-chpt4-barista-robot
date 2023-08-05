@@ -2,10 +2,13 @@
 <robot name="barista" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Include external files -->
 
-  <xacro:include filename="$(find barista_robot_description)/xacro/wheel.xacro"/>
+<xacro:property name="robot_name"/>
+<xacro:property name="robot_name" value="$(arg robot_name)"/>
+ <xacro:include filename="$(find barista_robot_description)/xacro/wheel.xacro"/>
   <xacro:include filename="$(find barista_robot_description)/xacro/standoff.xacro"/>
   <xacro:include filename="$(find barista_robot_description)/xacro/laser_scanner.xacro"/>
   <xacro:include filename="$(find barista_robot_description)/xacro/cup_holder_tray.xacro"/>
+
 
   <!-- Define the base link of the robot -->
   <link name="base_link">
@@ -36,18 +39,23 @@
   <!-- Include and instantiate the wheel.xacro macro for the left wheel -->
   <xacro:wheel prefix="left" />
 <xacro:wheel_color prefix="left" />
-  <!-- Include and instantiate the joint_wheel.xacro macro for the left wheel joint -->
   <xacro:joint_wheel prefix="left" x="0.1" />
+
+
 
   <!-- Include and instantiate the wheel.xacro macro for the right wheel -->
   <xacro:wheel prefix="right" />
 <xacro:wheel_color prefix="right" />
-  <!-- Include and instantiate the joint_wheel.xacro macro for the right wheel joint -->
-  <xacro:joint_wheel prefix="right" x="-0.1" />
+  <xacro:joint_wheel prefix="right" x="-0.1" /> 
+
 
 
   <gazebo>
-    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
+    <plugin name="${robot_name}_diff_drive" filename="libgazebo_ros_diff_drive.so">
+            <ros>
+            <namespace>/${robot_name}</namespace>
+      <remapping>/cmd_vel:=cmd_vel</remapping>
+        </ros>
       <!-- wheels -->
       <left_joint>left_wheel_joint</left_joint>
       <right_joint>right_wheel_joint</right_joint>
@@ -66,11 +74,11 @@
       <publish_wheel_tf>true</publish_wheel_tf>
       <command_topic>cmd_vel</command_topic>
 
-      <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>base_link</robot_base_frame>
+        <odometry_frame>${robot_name}/odom</odometry_frame>
+        <robot_base_frame>${robot_name}/base_link</robot_base_frame>
     </plugin>
   </gazebo>
-  
+
   <xacro:standoff_link prefix="stand1" />
   <xacro:standoff_joint prefix="stand1" x="0.1" y="0.1" z="0.185" />
 
@@ -89,8 +97,43 @@
 <xacro:laser_scanner />
 
 <xacro:laser_scan_joint />
-<xacro:laser_plugin />
+  <gazebo reference="lidar">
+    <sensor type="ray" name="head_hokuyo_sensor">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>5</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1.000000</resolution>
+            <min_angle>0.000000</min_angle>
+            <max_angle>6.280000</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120000</min>
+          <max>3.5</max>
+          <resolution>0.015000</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="${robot_name}_gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_ray_sensor.so">
+        <ros>
 
+                    <namespace>/${robot_name}</namespace>
+
+          <remapping>~/out:=scan</remapping>
+        </ros>
+        <output_type>sensor_msgs/LaserScan</output_type>
+        <frame_name>${robot_name}/lidar</frame_name>
+      </plugin>
+    </sensor>
+  </gazebo>
 <xacro:top />
 
 <xacro:top_joint origin_xyz="0.0 0.0 0.3425" origin_rpy="0 0 1.57" />
