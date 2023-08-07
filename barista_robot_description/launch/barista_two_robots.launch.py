@@ -77,7 +77,7 @@ def generate_launch_description():
         executable='robot_state_publisher',
         name='robot_state_publisher2',
         namespace=robot_name_1,
-        parameters=[params1],
+        parameters=[{'frame_prefix': robot_name_1 + '/'},params1],
         output="screen",
         remappings=[('/scan', robot_name_1 + '/scan')]
     )
@@ -88,7 +88,7 @@ def generate_launch_description():
         executable='robot_state_publisher',
         name='robot_state_publisher2',
         namespace=robot_name_2,
-        parameters=[params2],
+        parameters=[{'frame_prefix': robot_name_2 + '/'},params2],
         output="screen",
         remappings=[('/scan', robot_name_2 + '/scan')]
     )
